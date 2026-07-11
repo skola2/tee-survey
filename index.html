@@ -1,0 +1,936 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=Tangerine:wght@700&display=swap');
+  :root{
+    --paper:#F1EFE2;
+    --card:#FCFBF5;
+    --ink:#26301F;
+    --ink-soft:#7C8874;
+    --wine:#6F8C68;
+    --wine-deep:#516B4B;
+    --gold:#C9B37E;
+    --gold-light:#E7DCB8;
+    --line:#DDD6BE;
+  }
+  *{box-sizing:border-box;}
+  #app{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    min-height:100%;
+    padding:36px 16px 48px;
+    display:flex;
+    justify-content:center;
+  }
+  .wrap{width:100%;max-width:440px;}
+  .top-link{
+    text-align:right;
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-bottom:18px;
+  }
+  .top-link a{color:var(--wine);text-decoration:underline;cursor:pointer;font-weight:600;}
+  .owner-link{text-align:center;margin-top:14px;}
+  .owner-link a{font-size:11px;color:var(--ink-soft);opacity:0.55;text-decoration:none;cursor:default;}
+  .tag{
+    position:relative;
+    background:var(--card);
+    border-radius:16px;
+    padding:42px 30px 32px;
+    box-shadow:0 30px 60px -26px rgba(42,32,22,0.4),0 2px 10px rgba(42,32,22,0.08);
+    overflow:hidden;
+  }
+  .tag-accent{
+    position:absolute;top:0;left:0;right:0;height:5px;
+    background:linear-gradient(90deg,var(--gold),var(--wine));
+  }
+  .eyebrow{
+    font-family:'Fraunces',Georgia,serif;font-style:italic;font-weight:500;
+    font-size:14px;color:var(--wine);letter-spacing:.01em;margin-bottom:10px;
+  }
+  h1{
+    font-family:'Tangerine',cursive;font-weight:700;
+    font-size:clamp(40px,11vw,48px);
+    line-height:1.0;margin:0 0 10px;color:var(--ink);
+    letter-spacing:.5px;
+  }
+  h2{
+    font-family:'Tangerine',cursive;font-weight:700;
+    font-size:clamp(30px,8vw,38px);
+    line-height:1.05;margin:0 0 18px;color:var(--ink);letter-spacing:.5px;
+  }
+  p.sub{color:var(--ink-soft);font-size:14.5px;line-height:1.6;margin:0 0 22px;}
+  .hint{
+    font-size:12.5px;color:var(--wine);font-weight:600;
+    margin:-8px 0 14px;letter-spacing:.01em;
+  }
+  .btn{
+    display:inline-block;width:100%;text-align:center;
+    background:var(--wine);color:var(--card);border:none;
+    padding:14px 18px;border-radius:10px;font-size:15px;font-weight:600;
+    font-family:'Inter',sans-serif;letter-spacing:.01em;
+    cursor:pointer;transition:background .15s ease,transform .15s ease;
+  }
+  .btn:hover{background:var(--wine-deep);}
+  .btn:active{transform:scale(.98);}
+  .btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px;}
+  .btn.ghost{
+    background:transparent;color:var(--wine);border:1.5px solid var(--line);
+    text-decoration:none;font-weight:600;padding:12px;
+  }
+  .btn.ghost:hover{background:var(--paper);}
+  .progress-row{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+  .progress-track{flex:1;height:4px;background:var(--gold-light);border-radius:99px;overflow:hidden;}
+  .progress-fill{height:100%;background:var(--wine);transition:width .3s ease;}
+  .progress-label{font-size:11px;color:var(--ink-soft);white-space:nowrap;font-weight:600;}
+  .option{
+    display:flex;align-items:center;gap:12px;
+    width:100%;text-align:left;background:var(--card);
+    border:1.5px solid var(--line);border-radius:11px;
+    padding:14px 16px;margin-bottom:10px;font-size:14.5px;color:var(--ink);
+    cursor:pointer;transition:.15s ease;
+  }
+  .option:hover{border-color:var(--gold);background:var(--paper);}
+  .option:focus-visible{outline:3px solid var(--gold);outline-offset:1px;}
+  .option.selected{
+    background:var(--wine);border-color:var(--wine);
+    color:var(--card);font-weight:600;
+  }
+  .option .mark{
+    width:17px;height:17px;flex:0 0 17px;border-radius:50%;
+    border:2px solid var(--gold);
+  }
+  .option.selected .mark{border-color:var(--card);background:var(--card);}
+  .option.multi .mark{border-radius:5px;}
+  .option-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:10px;}
+  .option.tile{
+    flex-direction:column;align-items:stretch;text-align:center;
+    padding:0;margin-bottom:0;position:relative;overflow:hidden;
+  }
+  .option.tile .tile-visual{
+    height:58px;display:flex;align-items:center;justify-content:center;
+    color:var(--wine);background:linear-gradient(160deg,var(--paper),var(--gold-light));
+  }
+  .option.tile .tile-label{padding:7px 6px;font-size:12px;font-weight:600;color:var(--ink);}
+  .option.tile.selected{background:var(--card);color:var(--ink);border-color:var(--wine);}
+  .option.tile .tile-check{
+    position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:50%;
+    background:var(--card);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;
+    opacity:0;transition:opacity .15s ease;color:var(--card);
+  }
+  .option.tile.selected .tile-check{opacity:1;background:var(--wine);border-color:var(--wine);}
+  textarea,input[type=text],input[type=password],input[type=email]{
+    width:100%;border:1.5px solid var(--line);border-radius:11px;
+    padding:13px 15px;font-size:14.5px;font-family:inherit;color:var(--ink);
+    background:var(--card);margin-bottom:12px;resize:none;
+  }
+  textarea:focus,input[type=text]:focus,input[type=password]:focus,input[type=email]:focus{outline:none;border-color:var(--gold);}
+  .nav-row{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:6px;}
+  .nav-row .btn{flex:0 0 auto;width:auto;min-width:120px;padding:12px 26px;}
+  .back-link{
+    font-size:13px;color:var(--ink-soft);text-decoration:underline;
+    cursor:pointer;flex:0 0 auto;
+  }
+  .step-enter{animation:fadeIn .3s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  @media (prefers-reduced-motion:reduce){.step-enter{animation:none;} .btn{transition:none;}}
+  .field-label{font-size:12.5px;color:var(--ink-soft);margin:0 0 6px;font-weight:600;}
+  .bar-row{margin-bottom:14px;}
+  .bar-label{font-size:13px;margin-bottom:5px;display:flex;justify-content:space-between;}
+  .bar-track{height:8px;background:var(--gold-light);border-radius:99px;overflow:hidden;}
+  .bar-fill{height:100%;background:var(--wine);}
+  .qgroup{
+    margin-bottom:12px;border:1px solid var(--line);border-radius:11px;
+    padding:14px 16px;background:var(--card);
+  }
+  .qgroup h3{font-family:'Fraunces',Georgia,serif;font-size:15px;margin:0 0 12px;font-weight:600;color:var(--ink);}
+  .qgroup summary{cursor:pointer;list-style:none;}
+  .qgroup summary::-webkit-details-marker{display:none;}
+  .qsum-head{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+  .qsum-title{font-family:'Fraunces',Georgia,serif;font-size:15px;font-weight:600;color:var(--ink);}
+  .qsum-top{font-size:12px;color:var(--ink-soft);margin-top:4px;}
+  .chev{color:var(--wine);font-size:12px;flex:0 0 auto;transition:transform .15s ease;}
+  .qgroup[open] .chev{transform:rotate(180deg);}
+  .qgroup-body{margin-top:14px;}
+  .freeform{
+    background:var(--paper);border:1px solid var(--line);border-radius:9px;
+    padding:10px 12px;font-size:13.5px;margin-bottom:8px;color:var(--ink);
+  }
+  .empty-note{color:var(--ink-soft);font-size:13.5px;font-style:italic;}
+  .sort-row{display:flex;gap:8px;margin-bottom:12px;}
+  .sort-btn{
+    font-size:11.5px;font-weight:600;color:var(--ink-soft);
+    border:1px solid var(--line);border-radius:99px;padding:5px 12px;cursor:pointer;
+  }
+  .sort-btn.active{background:var(--wine);color:var(--card);border-color:var(--wine);}
+  .privacy-note{
+    display:flex;gap:8px;align-items:center;
+    padding:12px 2px 0;margin-bottom:0;
+    justify-content:center;text-align:center;
+    font-size:11.5px;line-height:1.45;color:var(--ink-soft);opacity:.8;
+  }
+  .privacy-note span{flex:0 1 auto;}
+  .mission{
+    background:rgba(231,220,184,0.3);border-left:2px solid var(--gold);
+    border-radius:0 8px 8px 0;padding:10px 13px;margin:0 0 16px;
+    font-family:'Fraunces',Georgia,serif;font-size:14px;line-height:1.5;
+    color:var(--ink-soft);font-style:italic;
+  }
+  .qsub{margin-bottom:18px;}
+  .qsub:last-child{margin-bottom:0;}
+  .qsub .field-label{margin-bottom:9px;font-size:13px;color:var(--ink);}
+</style>
+
+<div id="app"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// --- Supabase setup ---
+// The publishable key below is safe to expose in client-side code by design.
+// Real security comes from the Row Level Security policies on the 'responses' table
+// (anon can only INSERT, never SELECT/UPDATE/DELETE).
+const SUPABASE_URL = 'https://devobhiyoeonovoqrjla.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_Hh77vkoO8q99LYHBUkuC1Q_NiDr25et';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+const QUESTIONS = [
+  {
+    id:'challenge', type:'choice', multi:false,
+    title:'Honestly \u2014 how hard is it to find a really good tee? \ud83d\ude2e\u200d\ud83d\udca8',
+    options:[
+      'A real struggle \u2014 I end up compromising',
+      'Hit or miss \u2014 takes a lot of hunting \ud83d\udd0d',
+      'Mostly fine \u2014 I usually find what I want',
+      'Never really thought about it \ud83e\udd37'
+    ]
+  },
+  {
+    id:'buy_pains', type:'choice', multi:true,
+    title:'What makes buying tees frustrating? \ud83d\ude35\u200d\ud83d\udcab',
+    hint:'Tap all that apply',
+    noneIndex:6,
+    options:[
+      'Sizes vary wildly between brands \ud83d\udcd0',
+      'Can\u2019t judge fabric quality online \ud83d\udcf1',
+      'It\u2019s all crop tops & trends \u2014 normal tees barely exist \ud83d\ude44',
+      'Good quality = crazy expensive \ud83d\udcb8',
+      'The colour I want is never in stock \ud83c\udfaf',
+      'Returns are a hassle, so I keep the duds \ud83d\udce6',
+      'Nothing really \u2014 buying is the easy part \ud83e\udd37\u200d\u2640\ufe0f'
+    ]
+  },
+  {
+    id:'age', type:'choice', multi:false,
+    title:'Quick one \u2014 your age? \ud83d\udc4b',
+    options:['18\u201324','25\u201330','31\u201335','36\u201345','45+']
+  },
+  {
+    id:'frequency', type:'choice', multi:false,
+    title:'How often are you in a tee? \ud83d\udc5a',
+    options:[
+      'Every. single. day. \ud83d\udd01',
+      'Most days of the week',
+      'Now and then \ud83e\udd37',
+      'Honestly, rarely'
+    ]
+  },
+  {
+    id:'occasions', type:'choice', multi:true,
+    title:'When do you reach for a tee? \ud83d\udd5b',
+    hint:'Tap all that apply',
+    options:[
+      'Sleeping / as nightwear \ud83d\ude34',
+      'Chilling / lounging at home \ud83d\udecb\ufe0f',
+      'Out with friends, casual plans \ud83c\udf7b',
+      'Work or office \ud83d\udcbc',
+      'Gym / errands / running around \ud83c\udfc3',
+      'Layering under other clothes \ud83e\udde5'
+    ]
+  },
+  {
+    id:'buying', type:'group',
+    title:'The shopping side of things \ud83d\uded2',
+    groups:[
+      {
+        id:'buy_freq', label:'How often does a new tee land in your cart?',
+        options:['All the time \ud83d\ude48','Every few months','Only when old ones die \ud83d\udc80','Rarely \u2014 I\u2019m picky']
+      },
+      {
+        id:'buy_where', label:'And where do you usually buy them?',
+        options:['Mostly online \ud83d\udcf1','Mostly in stores \ud83c\udfec','A bit of both \ud83d\udd00']
+      }
+    ]
+  },
+  {
+    id:'decider', type:'choice', multi:false,
+    title:'When you\u2019re buying a tee, what actually decides it? \ud83e\uddd0',
+    options:[
+      'Fit & feel \u2014 it has to sit right \ud83d\ude4c',
+      'Price \u2014 value comes first \ud83e\ude99',
+      'A brand I already trust \ud83d\udc85',
+      'How it looks \u2014 colour, style, vibe \u2728'
+    ]
+  },
+  {
+    id:'brands', type:'choice', multi:true,
+    title:'Which brands do you usually buy tees from? \ud83d\udecd\ufe0f',
+    hint:'Tap all that apply',
+    noneIndex:6,
+    options:[
+      'Zudio \ud83c\udfec',
+      'H&M / Zara \ud83c\udf0d',
+      'Bewakoof / The Souled Store \ud83d\ude1c',
+      'Roadster / Mast & Harbour / DressBerry \ud83d\udce6',
+      'Jockey \ud83d\ude0c',
+      'Uniqlo \u26aa',
+      'I don\u2019t stick to brands \u2014 whatever fits \ud83e\udd37\u200d\u2640\ufe0f'
+    ]
+  },
+  {
+    id:'pattern', type:'choice', multi:true,
+    title:'How do you like your tees dressed? \ud83d\udc83',
+    hint:'Tap all that you\u2019d actually wear',
+    options:[
+      'Plain & solid \ud83e\uddca',
+      'Small details \u2014 tiny logo, pocket, embroidery \ud83c\udf38',
+      'Prints & graphics \ud83d\uddbc\ufe0f',
+      'Stripes / patterns \ud83c\udf0a'
+    ]
+  },
+  {
+    id:'style', type:'choice', multi:false,
+    title:'What\u2019s your ideal tee fit? \ud83e\ude9e',
+    options:[
+      'Slim & fitted \u2014 close to the body \ud83d\udcaa',
+      'Relaxed / regular \u2014 easy, not tight \ud83d\udc4c',
+      'Boxy \u2014 straight, squarish shape \ud83e\uddca',
+      'Cropped \u2014 ends above the waist \u2702\ufe0f',
+      'Longline \u2014 longer, covers the hips \ud83e\uddf5',
+      'Oversized & baggy \ud83d\udef9'
+    ]
+  },
+  {
+    id:'fabric', type:'choice', multi:true,
+    title:'How should it feel against your skin? \ud83e\udee6',
+    hint:'Tap all that appeal',
+    noneIndex:5,
+    options:[
+      'Pure & breathable \u2014 100% cotton, nothing added \ud83c\udf3f',
+      'Buttery-soft & premium \u2014 Supima / combed cotton \u2728',
+      'Soft with a bit of stretch \u2014 cotton + elastane \ud83e\udd38',
+      'Durable & low-maintenance \u2014 cotton-poly blend, resists shrink & wrinkle \ud83e\uddf1',
+      'Silky & drapey \u2014 modal / viscose blend \ud83c\udf43',
+      'No idea, I just want comfy \ud83d\udecb\ufe0f'
+    ]
+  },
+  {
+    id:'problems', type:'choice', multi:true,
+    title:'What\u2019s ruined a tee for you before? \ud83d\ude24',
+    hint:'Tap all that apply',
+    noneIndex:6,
+    options:[
+      'Colours faded after a few washes \ud83c\udfa8',
+      'Starts smelling fast, needs constant washing \ud83d\udc43',
+      'Went see-through / too thin \ud83e\udee5',
+      'Lost its shape, shrank, or collar stretched \ud83d\udcc9',
+      'Never the right length / rides up \ud83d\udccf',
+      'Clings to the stomach \ud83d\ude2c',
+      'Honestly, none \u2014 I\u2019ve found my ride-or-dies \ud83d\udc9a'
+    ]
+  },
+  {
+    id:'mens_tees', type:'group',
+    title:'Quick one about men\u2019s tees \ud83d\udc40',
+    groups:[
+      {
+        id:'mens_bought', label:'Have you ever bought a men\u2019s or unisex tee for yourself?',
+        options:['Yes, often \ud83d\ude4b','Once or twice','Never']
+      },
+      {
+        id:'mens_why', label:'If yes \u2014 what made you pick it?',
+        optional:true,
+        options:['Better fabric / quality \ud83d\udc4c','The fit or oversized look \ud83d\udef9','Just liked the design \ud83c\udfa8','Doesn\u2019t apply \u2014 never have']
+      }
+    ]
+  },
+  {
+    id:'colors', type:'choice', multi:true,
+    title:'Which colours are in your cart? \ud83c\udff3\ufe0f\u200d\ud83c\udf08',
+    hint:'Tap all that apply',
+    options:['White','Peach','Light grey','Silver grey','Mid grey','Sage grey','Charcoal','Slate charcoal','Black','Teal','Ocean blue','Steel blue','Slate blue','Navy','Maroon','Mustard','Chartreuse','Olive','Fern','Mauve'],
+    optionImages:[
+      {hex:'#F4F9FF', border:true},{hex:'#FED1BD', border:true},{hex:'#B3B4B9'},{hex:'#8C8C8C'},{hex:'#888D82'},
+      {hex:'#CCC5B5', border:true},{hex:'#363838'},{hex:'#303A3E'},{hex:'#36362D'},{hex:'#005B5D'},
+      {hex:'#005A92'},{hex:'#2C4053'},{hex:'#394868'},{hex:'#233658'},{hex:'#64242E'},
+      {hex:'#D99938'},{hex:'#DCC13A'},{hex:'#615F43'},{hex:'#80856D'},{hex:'#AD6D7F'}
+    ]
+  },
+  {
+    id:'price', type:'choice', multi:false,
+    title:'What feels fair for a really good tee? \ud83d\udcb8',
+    options:[
+      'Under \u20b9400 \ud83e\ude99',
+      '\u20b9400\u2013700 \ud83d\udc4d',
+      '\u20b9700\u20131,000 \u2728',
+      '\u20b91,000+ \ud83d\udc8e'
+    ]
+  },
+  {
+    id:'missing', type:'text_contact',
+    title:'Last one, promise \u2014 what\u2019s missing from your tees? \ud83d\udc4c',
+    placeholder:'One line is plenty \u2014 no essays \ud83d\ude4f',
+    optional:true,
+    contactSubtitle:'Want first dibs when this drops? Totally optional \u2014 leave blank to stay anonymous.'
+  }
+];
+
+let state = { mode:'intro', step:0, answers:{}, submitting:false };
+
+function render(){
+  const app = document.getElementById('app');
+  if(state.mode==='intro') app.innerHTML = wrap(introHTML());
+  else if(state.mode==='question') app.innerHTML = wrap(questionHTML());
+  else if(state.mode==='thanks') app.innerHTML = wrap(thanksHTML());
+  else if(state.mode==='save_error') app.innerHTML = wrap(saveErrorHTML());
+  else if(state.mode==='gate') app.innerHTML = wrap(gateHTML());
+  else if(state.mode==='results'){ app.innerHTML = wrap(loadingHTML()); loadResults(); }
+}
+
+function wrap(inner){
+  return '<div class="wrap">'+inner+'</div>';
+}
+
+async function ownerAccess(){
+  // If already logged in from earlier, skip straight to results
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    if(session){ goResults(); return; }
+  }catch(e){}
+  state.mode='gate'; state.gateError=false; render();
+}
+
+async function submitGate(){
+  const email = (document.getElementById('gate-email').value||'').trim();
+  const password = (document.getElementById('gate-password').value||'').trim();
+  try{
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    if(error) throw error;
+    goResults();
+    return;
+  }catch(e){}
+  state.gateError=true; render();
+}
+
+function gateHTML(){
+  return tagCard(
+    '<div class="eyebrow">for the maker</div>'+
+    '<h2>Log in</h2>'+
+    '<form id="gate-form" onsubmit="handleGateSubmit(event); return false;">'+
+    '<div class="field-label">Email</div>'+
+    '<input type="email" id="gate-email" name="email" autocomplete="username" placeholder="you@email.com" required>'+
+    '<div class="field-label">Password</div>'+
+    '<input type="password" id="gate-password" name="password" autocomplete="current-password" placeholder="Password" required>'+
+    (state.gateError?'<p class="sub" style="color:var(--wine-deep);margin-top:-4px;">Wrong email or password, try again.</p>':'')+
+    '<div class="nav-row" style="margin-top:6px;">'+
+    '<span class="back-link" onclick="restart()">\u2190 back</span>'+
+    '<button type="submit" class="btn">Log in \u2192</button>'+
+    '</div>'+
+    '</form>'
+  );
+}
+
+function handleGateSubmit(event){
+  if(event && event.preventDefault) event.preventDefault();
+  submitGate();
+}
+
+function tagCard(inner){
+  return '<div class="tag step-enter"><div class="tag-accent"></div>'+inner+'</div>';
+}
+
+function checkSVG(){
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><path d="M20 6L9 17l-5-5"/></svg>';
+}
+
+function isSelected(q,i){
+  return q.multi ? (state.answers[q.id]||[]).includes(i) : state.answers[q.id]===i;
+}
+
+function optionHandler(q,step,i){
+  return q.multi ? 'toggleMulti('+step+','+i+')' : 'selectSingle('+step+','+i+')';
+}
+
+function renderPlainOption(q,step,i,opt){
+  const sel = isSelected(q,i);
+  const cls = 'option'+(q.multi?' multi':'')+(sel?' selected':'');
+  const handler = optionHandler(q,step,i);
+  return '<div class="'+cls+'" role="button" tabindex="0" onclick="'+handler+'" onkeydown="if(event.key===\'Enter\'){'+handler+'}"><span class="mark"></span><span>'+opt+'</span></div>';
+}
+
+function renderTileOption(q,step,i,opt,im){
+  const sel = isSelected(q,i);
+  const cls = 'option tile'+(sel?' selected':'');
+  const handler = optionHandler(q,step,i);
+  const border = im.border ? 'box-shadow:inset 0 0 0 1.5px rgba(38,48,31,0.25);' : 'box-shadow:inset 0 0 0 1px rgba(38,48,31,0.08);';
+  const visual = '<div class="tile-visual" style="background:'+im.hex+';'+border+'"></div>';
+  return '<div class="'+cls+'" role="button" tabindex="0" onclick="'+handler+'" onkeydown="if(event.key===\'Enter\'){'+handler+'}">'+
+    visual+'<div class="tile-check">'+checkSVG()+'</div><div class="tile-label">'+opt+'</div></div>';
+}
+
+function renderChoiceOptions(q,step){
+  if(!q.optionImages){
+    return q.options.map((opt,i)=>renderPlainOption(q,step,i,opt)).join('');
+  }
+  let tiles='';
+  q.options.forEach((opt,i)=>{
+    tiles += renderTileOption(q,step,i,opt,q.optionImages[i]);
+  });
+  return '<div class="option-grid">'+tiles+'</div>';
+}
+
+function introHTML(){
+  return tagCard(
+    '<div class="eyebrow">for women, 2 mins, mostly taps \ud83d\ude0e</div>'+
+    '<h1>Help me make your tee \ud83d\udc5a</h1>'+
+    '<p class="sub">Tap through and be brutally honest \u2014 even a "nah, not for me" helps. \ud83e\udef6</p>'+
+    '<div class="mission">On a mission to make women\u2019s t-shirts that actually feel good \u2014 the way men\u2019s t-shirts just do. \ud83d\udcaa</div>'+
+    '<button class="btn" onclick="start()">Let\'s gooo \u2192</button>'+
+    '<div class="privacy-note">\ud83d\udd76\ufe0f <span>Anonymous. No personal info. Answer in incognito if that\'s your vibe.</span></div>'+
+    '<div class="owner-link"><a onclick="ownerAccess()">made with \ud83e\ude77</a></div>'
+  );
+}
+
+function start(){ state.mode='question'; state.step=0; render(); }
+
+function questionHTML(){
+  const q = QUESTIONS[state.step];
+  const total = QUESTIONS.length;
+  const pct = Math.round(((state.step+1)/total)*100);
+
+  let body='';
+  if(q.type==='choice'){
+    body = renderChoiceOptions(q, state.step);
+  } else if(q.type==='group'){
+    body = q.groups.map((g)=>{
+      const opts = g.options.map((opt,i)=>{
+        const sel = (state.answers[g.id]===i);
+        const handler = 'selectGroup(\''+g.id+'\','+i+')';
+        return '<div class="option'+(sel?' selected':'')+'" role="button" tabindex="0" onclick="'+handler+'" onkeydown="if(event.key===\'Enter\'){'+handler+'}"><span class="mark"></span><span>'+opt+'</span></div>';
+      }).join('');
+      return '<div class="qsub"><div class="field-label">'+g.label+'</div>'+opts+'</div>';
+    }).join('');
+  } else if(q.type==='text'){
+    const val = state.answers[q.id]||'';
+    body = '<textarea id="text-input" rows="3" placeholder="'+(q.placeholder||'')+'">'+val+'</textarea>';
+  } else if(q.type==='text_contact'){
+    const val = state.answers[q.id]||'';
+    body = '<textarea id="text-input" rows="3" placeholder="'+(q.placeholder||'')+'">'+val+'</textarea>'+
+      '<p class="sub" style="margin:2px 0 14px;font-size:13px;">'+(q.contactSubtitle||'')+'</p>'+
+      '<div class="field-label">Name (optional)</div>'+
+      '<input type="text" id="contact-name" placeholder="Your name" value="'+(state.answers.contact_name||'')+'">'+
+      '<div class="field-label">Email or phone (optional)</div>'+
+      '<input type="text" id="contact-info" placeholder="you@email.com or phone number" value="'+(state.answers.contact_info||'')+'">';
+  }
+
+  const isLast = state.step === QUESTIONS.length-1;
+  const nextLabel = isLast ? 'Submit \u2192' : 'Next \u2192';
+
+  return tagCard(
+    '<div class="progress-row"><div class="progress-track"><div class="progress-fill" style="width:'+pct+'%"></div></div>'+
+    '<div class="progress-label">'+(state.step+1)+' of '+total+'</div></div>'+
+    '<h2>'+q.title+'</h2>'+
+    (q.hint?'<div class="hint">'+q.hint+'</div>':'')+
+    body+
+        '<div class="nav-row" style="margin-top:14px;">'+
+    '<span class="back-link" onclick="goBack('+state.step+')">\u2190 back</span>'+
+    '<button class="btn" onclick="goNext('+state.step+')">'+nextLabel+'</button>'+
+    '</div>'
+  );
+}
+
+function selectSingle(step,i){ state.answers[QUESTIONS[step].id]=i; render(); }
+
+function selectGroup(gid,i){ state.answers[gid]=i; render(); }
+
+function toggleMulti(step,i){
+  const q = QUESTIONS[step];
+  const id = q.id;
+  if(!state.answers[id]) state.answers[id]=[];
+  let arr = state.answers[id];
+  const pos = arr.indexOf(i);
+  if(pos>=0){
+    arr.splice(pos,1);
+  } else {
+    // "None" option is exclusive: picking it clears others, picking others clears it
+    if(q.noneIndex!==undefined){
+      if(i===q.noneIndex){ arr.length=0; }
+      else {
+        const nonePos = arr.indexOf(q.noneIndex);
+        if(nonePos>=0) arr.splice(nonePos,1);
+      }
+    }
+    arr.push(i);
+  }
+  render();
+}
+
+function goBack(step){
+  if(step===0){ state.mode='intro'; render(); return; }
+  state.step = step-1; render();
+}
+
+function goNext(step){
+  const q = QUESTIONS[step];
+  if(q.type==='text' || q.type==='text_contact'){
+    state.answers[q.id] = (document.getElementById('text-input').value||'').trim();
+  }
+  if(q.type==='text_contact'){
+    state.answers.contact_name = (document.getElementById('contact-name').value||'').trim();
+    state.answers.contact_info = (document.getElementById('contact-info').value||'').trim();
+  }
+  if(step === QUESTIONS.length-1){
+    if(state.submitting) return; // guards against double-click / slow-network double submit
+    state.submitting = true;
+    finishSurvey();
+  }
+  else { state.step = step+1; render(); }
+}
+
+function hasAnyData(response){
+  return Object.keys(response).some(key=>{
+    if(key==='ts') return false;
+    const val = response[key];
+    if(Array.isArray(val)) return val.length>0;
+    return val!==null && val!==undefined && val!=='';
+  });
+}
+
+function retrySubmit(){
+  if(state.submitting) return; // guards against double-click on the retry button too
+  state.submitting = true;
+  finishSurvey();
+}
+
+function discardAndFinish(){
+  state.mode='thanks'; render();
+}
+
+async function finishSurvey(){
+  const response = { ts: Date.now() };
+  QUESTIONS.forEach(q=>{
+    if(q.type==='choice'){
+      if(q.multi){
+        const idxArr = state.answers[q.id]||[];
+        response[q.id] = idxArr.map(i=>q.options[i]);
+      } else {
+        const idx = state.answers[q.id];
+        response[q.id] = (idx===undefined) ? null : q.options[idx];
+      }
+    } else if(q.type==='text' || q.type==='text_contact'){
+      response[q.id] = state.answers[q.id] || '';
+    } else if(q.type==='group'){
+      q.groups.forEach(g=>{
+        const idx = state.answers[g.id];
+        response[g.id] = (idx===undefined) ? null : g.options[idx];
+      });
+    }
+  });
+  response.name = state.answers.contact_name || '';
+  response.contact = state.answers.contact_info || '';
+
+  if(!hasAnyData(response)){
+    console.log('Nothing was answered — skipping save');
+    state.submitting = false;
+    state.mode='thanks'; render();
+    return;
+  }
+
+  try{
+    const { error } = await sb.from('responses').insert({ data: response });
+    if(error) throw error;
+    state.submitting = false;
+    state.mode='thanks';
+  }catch(e){
+    console.error('Could not save response', e);
+    state.submitting = false;
+    state.mode='save_error';
+  }
+  render();
+}
+
+function saveErrorHTML(){
+  return tagCard(
+    '<div class="eyebrow">hmm</div>'+
+    '<h2>Couldn\u2019t save that</h2>'+
+    '<p class="sub">Looks like a connection hiccup \u2014 nothing\u2019s lost, your answers are still right here. Want to try again?</p>'+
+    '<button class="btn" onclick="retrySubmit()">Try again \u2192</button>'+
+    '<div style="text-align:center;margin-top:12px;">'+
+    '<span class="back-link" onclick="discardAndFinish()">Skip \u2014 don\u2019t save this response</span>'+
+    '</div>'
+  );
+}
+
+function thanksHTML(){
+  return tagCard(
+    '<div class="eyebrow">that\u2019s a wrap \ud83c\udf89</div>'+
+    '<h1>You\u2019re a legend \ud83e\ude77</h1>'+
+    '<p class="sub">This is exactly what decides what gets made. Know someone with strong tee opinions? Send it their way.</p>'+
+    '<button class="btn" onclick="copyShareLink(this)">Copy link to share</button>'+
+    '<div style="height:10px;"></div>'+
+    '<button class="btn ghost" onclick="restart()">Fill it again for someone else</button>'
+  );
+}
+
+function copyShareLink(btn){
+  const url = window.location.href;
+  let copied = false;
+  try{
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(url);
+      copied = true;
+    }
+  }catch(e){ copied = false; }
+  if(btn) btn.textContent = copied ? 'Link copied \u2713' : 'Copy this page\u2019s URL to share';
+}
+
+function restart(){ state = { mode:'intro', step:0, answers:{}, submitting:false }; render(); }
+
+function goResults(){ state.mode='results'; render(); }
+
+async function signOut(){
+  try{
+    // 'local' scope clears this browser's session without waiting on a
+    // network round-trip to Supabase's server — more reliable than the
+    // default 'global' scope, which can silently fail to fully clear things
+    // if that network call has any hiccup.
+    await sb.auth.signOut({ scope:'local' });
+  }catch(e){ console.error('Sign out error', e); }
+
+  // Belt-and-suspenders: directly wipe any Supabase session data left in
+  // localStorage, regardless of whether the call above succeeded.
+  try{
+    Object.keys(localStorage).forEach(k=>{
+      if(k.startsWith('sb-') && k.includes('-auth-token')) localStorage.removeItem(k);
+    });
+  }catch(e){}
+
+  restart();
+}
+
+function loadingHTML(){
+  return tagCard('<p class="sub">Loading responses\u2026</p>');
+}
+
+let lastResultsData = [];
+
+async function loadResults(){
+  const app = document.getElementById('app');
+  let data = [];
+  try{
+    const { data: rows, error } = await sb
+      .from('responses')
+      .select('data')
+      .order('created_at', { ascending:true });
+    if(error) throw error;
+    data = (rows||[]).map(r=>r.data);
+  }catch(e){
+    console.error('Could not load responses', e);
+    data = [];
+  }
+  lastResultsData = data;
+  app.innerHTML = wrapResults(data);
+}
+
+function wrapResults(data){
+  const inner = tagCard(resultsHTML(data));
+  return '<div class="wrap"><div class="top-link"><a onclick="restart()">\u2190 back to survey</a> \u00b7 <a onclick="signOut()">sign out</a></div>'+inner+'</div>';
+}
+
+function tally(data, qid, options){
+  const counts = options.map(()=>0);
+  data.forEach(r=>{
+    const val = r[qid];
+    if(Array.isArray(val)){
+      val.forEach(v=>{ const i=options.indexOf(v); if(i>=0) counts[i]++; });
+    } else if(val){
+      const i = options.indexOf(val); if(i>=0) counts[i]++;
+    }
+  });
+  return counts;
+}
+
+// Collapsible section, sorted highest-count-first, with the top answer visible
+// even while collapsed — so the owner can scan every question at a glance
+// and only expand the ones they want the full breakdown for.
+function barsHTML(title, options, counts, total){
+  const paired = options.map((opt,i)=>({opt, count:counts[i]}));
+  paired.sort((a,b)=> b.count - a.count);
+  const max = Math.max(1, ...counts);
+  const topLabel = (paired[0] && paired[0].count>0)
+    ? paired[0].opt+' leads \u00b7 '+paired[0].count+(total?' of '+total:'')
+    : 'No answers yet';
+
+  let rows = '';
+  paired.forEach(({opt,count})=>{
+    const pct = Math.round((count/max)*100);
+    const share = total ? Math.round((count/total)*100) : 0;
+    rows += '<div class="bar-row"><div class="bar-label"><span>'+opt+'</span><span>'+count+' \u00b7 '+share+'%</span></div>'+
+           '<div class="bar-track"><div class="bar-fill" style="width:'+pct+'%"></div></div></div>';
+  });
+
+  return '<details class="qgroup"><summary>'+
+    '<div class="qsum-head"><span class="qsum-title">'+title+'</span><span class="chev">\u25be</span></div>'+
+    '<div class="qsum-top">'+topLabel+'</div>'+
+    '</summary><div class="qgroup-body">'+rows+'</div></details>';
+}
+
+// Free-text "what's missing" answers: collapsible like question cards,
+// with a count in the header and a newest/oldest sort toggle.
+// setMissingSort() swaps just this one card's HTML in place, so sorting
+// doesn't collapse or disturb any other card the owner has open.
+function missingSectionHTML(data, forceOpen){
+  const entries = data
+    .filter(r=>r.missing && r.missing.trim())
+    .map(r=>({ text:r.missing, ts:r.ts||0 }));
+
+  const sortOrder = state.missingSort || 'newest';
+  entries.sort((a,b)=> sortOrder==='newest' ? b.ts-a.ts : a.ts-b.ts);
+
+  const count = entries.length;
+  const topLabel = count ? (count+' response'+(count===1?'':'s')) : 'No answers yet';
+
+  let body = '';
+  if(count){
+    body += '<div class="sort-row">'+
+      '<span class="sort-btn'+(sortOrder==='newest'?' active':'')+'" onclick="setMissingSort(\'newest\')">Newest first</span>'+
+      '<span class="sort-btn'+(sortOrder==='oldest'?' active':'')+'" onclick="setMissingSort(\'oldest\')">Oldest first</span>'+
+      '</div>';
+    body += entries.map(e=>'<div class="freeform">'+escapeHtml(e.text)+'</div>').join('');
+  } else {
+    body += '<p class="empty-note">No answers yet.</p>';
+  }
+
+  return '<details id="missing-details" class="qgroup"'+(forceOpen?' open':'')+'>'+
+    '<summary><div class="qsum-head"><span class="qsum-title">What is missing from current tees</span><span class="chev">\u25be</span></div>'+
+    '<div class="qsum-top">'+topLabel+'</div></summary>'+
+    '<div class="qgroup-body">'+body+'</div></details>';
+}
+
+function setMissingSort(order){
+  state.missingSort = order;
+  const el = document.getElementById('missing-details');
+  if(el){ el.outerHTML = missingSectionHTML(lastResultsData, true); }
+}
+
+function resultsHTML(data){
+  if(!data.length){
+    return '<div class="eyebrow">responses</div><h1>No responses yet</h1><p class="sub">Share the link with a few friends and check back here.</p>';
+  }
+
+  let out = '<div class="eyebrow">responses</div><h1>'+data.length+' so far</h1>'+
+    '<p class="sub" style="margin-top:-8px;">Tap any question to see the full breakdown.</p>';
+
+  QUESTIONS.forEach(q=>{
+    if(q.type==='group'){
+      q.groups.forEach(g=>{
+        out += barsHTML(g.label, g.options, tally(data, g.id, g.options), data.length);
+      });
+      return;
+    }
+    if(q.type!=='choice') return;
+    out += barsHTML(q.title, q.options, tally(data, q.id, q.options), data.length);
+  });
+
+  out += missingSectionHTML(data);
+
+  const contacts = data.filter(r=>r.contact && r.contact.trim());
+  out += '<div class="qgroup"><h3>Wants early access</h3>';
+  if(contacts.length){
+    out += contacts.map(c=>'<div class="freeform">'+escapeHtml(c.name||'\u2014')+' \u00b7 '+escapeHtml(c.contact)+'</div>').join('');
+  } else {
+    out += '<p class="empty-note">Nobody yet.</p>';
+  }
+  out += '</div>';
+
+  out += '<div class="qgroup"><h3>Export</h3>'+
+    '<p class="sub" style="margin-bottom:12px;">Download every response as a file.</p>'+
+    '<button class="btn" onclick="downloadJSON()">\u2b07\ufe0f Download as JSON (for Claude)</button>'+
+    '<div style="height:10px;"></div>'+
+    '<button class="btn" onclick="downloadCSV()">\u2b07\ufe0f Download as CSV (opens in Excel/Sheets)</button>'+
+    '</div>';
+
+  return out;
+}
+
+// Builds one CSV column per question (multi-select answers joined with ";"),
+// plus a human-readable submission time, name, and contact.
+function toCSV(data){
+  const cols = ['submitted_at'];
+  QUESTIONS.forEach(q=>{
+    if(q.type==='group'){
+      q.groups.forEach(g=> cols.push(g.id));
+    } else {
+      cols.push(q.id);
+    }
+  });
+  cols.push('name'); cols.push('contact');
+
+  const escapeCell = (val)=>{
+    if(val===null || val===undefined) return '';
+    let s = Array.isArray(val) ? val.join('; ') : String(val);
+    if(/[",\n]/.test(s)){ s = '"'+s.replace(/"/g,'""')+'"'; }
+    return s;
+  };
+
+  const header = cols.join(',');
+  const rows = data.map(r=>{
+    return cols.map(c=>{
+      const val = (c==='submitted_at') ? (r.ts ? new Date(r.ts).toISOString() : '') : r[c];
+      return escapeCell(val);
+    }).join(',');
+  });
+  return [header, ...rows].join('\r\n');
+}
+
+function downloadFile(filename, content, mime){
+  const blob = new Blob([content], {type: mime});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+
+function downloadCSV(){
+  if(!lastResultsData.length) return;
+  downloadFile('tee_survey_responses.csv', toCSV(lastResultsData), 'text/csv;charset=utf-8;');
+}
+
+function downloadJSON(){
+  if(!lastResultsData.length) return;
+  downloadFile('tee_survey_responses.json', JSON.stringify(lastResultsData, null, 2), 'application/json');
+}
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+}
+
+// --- Dev shortcut: jump straight to a question or the thanks screen via URL,
+// e.g. file.html?mode=thanks  or  file.html?step=15
+// Regular survey-takers never add these params, so this has zero effect on them.
+(function applyDevShortcut(){
+  const params = new URLSearchParams(window.location.search);
+  const mode = params.get('mode');
+  const step = params.get('step');
+  if(mode==='thanks'){
+    state.mode = mode;
+  } else if(step!==null){
+    const idx = Math.max(0, Math.min(QUESTIONS.length-1, parseInt(step,10)||0));
+    state.mode = 'question';
+    state.step = idx;
+  }
+})();
+
+render();
+</script>
