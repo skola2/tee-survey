@@ -194,13 +194,44 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
 const QUESTIONS = [
   {
-    id:'challenge', type:'choice', multi:false,
-    title:'Honestly \u2014 how hard is it to find a really good tee? \ud83d\ude2e\u200d\ud83d\udca8',
-    options:[
-      'A real struggle \u2014 I end up compromising',
-      'Hit or miss \u2014 takes a lot of hunting \ud83d\udd0d',
-      'Mostly fine \u2014 I usually find what I want',
-      'Never really thought about it \ud83e\udd37'
+    id:'about_you', type:'group',
+    title:'Quick ones first \ud83d\udc55',
+    groups:[
+      {
+        id:'wears_womens', label:'Do you currently wear or shop for women\u2019s tees?',
+        options:[
+          'Yes, mainly what I wear \ud83d\udc9a',
+          'Sometimes',
+          'Not really \ud83d\udc55'
+        ]
+      },
+      {
+        id:'age', label:'And your age?',
+        options:['Under 25','25\u201335','35+']
+      }
+    ]
+  },
+  {
+    id:'tee_habits', type:'group',
+    title:'Your tee habits \ud83d\udc5a',
+    groups:[
+      {
+        id:'frequency', label:'How often are you in a tee?',
+        options:[
+          'Daily \ud83d\udd01',
+          'A few times a week',
+          'Rarely'
+        ]
+      },
+      {
+        id:'occasions', label:'When do you reach for a tee?', multi:true,
+        options:[
+          'Sleeping / lounging at home \ud83d\udecb\ufe0f',
+          'Out & about \u2014 friends, errands, gym \ud83c\udfc3',
+          'Work or office \ud83d\udcbc',
+          'Layering under other clothes \ud83e\udde5'
+        ]
+      }
     ]
   },
   {
@@ -219,44 +250,30 @@ const QUESTIONS = [
     ]
   },
   {
-    id:'age', type:'choice', multi:false,
-    title:'Quick one \u2014 your age? \ud83d\udc4b',
-    options:['18\u201324','25\u201330','31\u201335','36\u201345','45+']
-  },
-  {
-    id:'frequency', type:'choice', multi:false,
-    title:'How often are you in a tee? \ud83d\udc5a',
-    options:[
-      'Every. single. day. \ud83d\udd01',
-      'Most days of the week',
-      'Now and then \ud83e\udd37',
-      'Honestly, rarely'
-    ]
-  },
-  {
-    id:'occasions', type:'choice', multi:true,
-    title:'When do you reach for a tee? \ud83d\udd5b',
-    hint:'Tap all that apply',
-    options:[
-      'Sleeping / as nightwear \ud83d\ude34',
-      'Chilling / lounging at home \ud83d\udecb\ufe0f',
-      'Out with friends, casual plans \ud83c\udf7b',
-      'Work or office \ud83d\udcbc',
-      'Gym / errands / running around \ud83c\udfc3',
-      'Layering under other clothes \ud83e\udde5'
-    ]
-  },
-  {
-    id:'buying', type:'group',
-    title:'The shopping side of things \ud83d\uded2',
+    id:'shopping_prefs', type:'group',
+    title:'Brands & budget \ud83d\udecd\ufe0f',
     groups:[
       {
-        id:'buy_freq', label:'How often does a new tee land in your cart?',
-        options:['All the time \ud83d\ude48','Every few months','Only when old ones die \ud83d\udc80','Rarely \u2014 I\u2019m picky']
+        id:'brands', label:'Which brands do you usually buy tees from?', multi:true,
+        noneIndex:6,
+        options:[
+          'Zudio \ud83c\udfec',
+          'H&M / Zara \ud83c\udf0d',
+          'Bewakoof / The Souled Store \ud83d\ude1c',
+          'Roadster / Mast & Harbour / DressBerry \ud83d\udce6',
+          'Jockey \ud83d\ude0c',
+          'Uniqlo \u26aa',
+          'I don\u2019t stick to brands \u2014 whatever fits \ud83e\udd37\u200d\u2640\ufe0f'
+        ]
       },
       {
-        id:'buy_where', label:'And where do you usually buy them?',
-        options:['Mostly online \ud83d\udcf1','Mostly in stores \ud83c\udfec','A bit of both \ud83d\udd00']
+        id:'price', label:'What feels fair for a really good tee?',
+        options:[
+          'Under \u20b9400 \ud83e\ude99',
+          '\u20b9400\u2013700 \ud83d\udc4d',
+          '\u20b9700\u20131,000 \u2728',
+          '\u20b91,000+ \ud83d\udc8e'
+        ]
       }
     ]
   },
@@ -268,21 +285,6 @@ const QUESTIONS = [
       'Price \u2014 value comes first \ud83e\ude99',
       'A brand I already trust \ud83d\udc85',
       'How it looks \u2014 colour, style, vibe \u2728'
-    ]
-  },
-  {
-    id:'brands', type:'choice', multi:true,
-    title:'Which brands do you usually buy tees from? \ud83d\udecd\ufe0f',
-    hint:'Tap all that apply',
-    noneIndex:6,
-    options:[
-      'Zudio \ud83c\udfec',
-      'H&M / Zara \ud83c\udf0d',
-      'Bewakoof / The Souled Store \ud83d\ude1c',
-      'Roadster / Mast & Harbour / DressBerry \ud83d\udce6',
-      'Jockey \ud83d\ude0c',
-      'Uniqlo \u26aa',
-      'I don\u2019t stick to brands \u2014 whatever fits \ud83e\udd37\u200d\u2640\ufe0f'
     ]
   },
   {
@@ -323,6 +325,17 @@ const QUESTIONS = [
     ]
   },
   {
+    id:'colors', type:'choice', multi:true,
+    title:'Which colours are in your cart? \ud83c\udff3\ufe0f\u200d\ud83c\udf08',
+    hint:'Tap all that apply',
+    options:['White','Black','Charcoal','Grey','Sage grey','Navy','Ocean blue','Teal','Olive','Maroon','Mustard','Mauve'],
+    optionImages:[
+      {hex:'#F4F9FF', border:true},{hex:'#36362D'},{hex:'#363838'},{hex:'#8C8C8C'},
+      {hex:'#CCC5B5', border:true},{hex:'#233658'},{hex:'#005A92'},{hex:'#005B5D'},
+      {hex:'#615F43'},{hex:'#64242E'},{hex:'#D99938'},{hex:'#AD6D7F'}
+    ]
+  },
+  {
     id:'problems', type:'choice', multi:true,
     title:'What\u2019s ruined a tee for you before? \ud83d\ude24',
     hint:'Tap all that apply',
@@ -350,28 +363,6 @@ const QUESTIONS = [
         optional:true,
         options:['Better fabric / quality \ud83d\udc4c','The fit or oversized look \ud83d\udef9','Just liked the design \ud83c\udfa8','Doesn\u2019t apply \u2014 never have']
       }
-    ]
-  },
-  {
-    id:'colors', type:'choice', multi:true,
-    title:'Which colours are in your cart? \ud83c\udff3\ufe0f\u200d\ud83c\udf08',
-    hint:'Tap all that apply',
-    options:['White','Peach','Light grey','Silver grey','Mid grey','Sage grey','Charcoal','Slate charcoal','Black','Teal','Ocean blue','Steel blue','Slate blue','Navy','Maroon','Mustard','Chartreuse','Olive','Fern','Mauve'],
-    optionImages:[
-      {hex:'#F4F9FF', border:true},{hex:'#FED1BD', border:true},{hex:'#B3B4B9'},{hex:'#8C8C8C'},{hex:'#888D82'},
-      {hex:'#CCC5B5', border:true},{hex:'#363838'},{hex:'#303A3E'},{hex:'#36362D'},{hex:'#005B5D'},
-      {hex:'#005A92'},{hex:'#2C4053'},{hex:'#394868'},{hex:'#233658'},{hex:'#64242E'},
-      {hex:'#D99938'},{hex:'#DCC13A'},{hex:'#615F43'},{hex:'#80856D'},{hex:'#AD6D7F'}
-    ]
-  },
-  {
-    id:'price', type:'choice', multi:false,
-    title:'What feels fair for a really good tee? \ud83d\udcb8',
-    options:[
-      'Under \u20b9400 \ud83e\ude99',
-      '\u20b9400\u2013700 \ud83d\udc4d',
-      '\u20b9700\u20131,000 \u2728',
-      '\u20b91,000+ \ud83d\udc8e'
     ]
   },
   {
@@ -512,23 +503,24 @@ function questionHTML(){
   } else if(q.type==='group'){
     body = q.groups.map((g)=>{
       const opts = g.options.map((opt,i)=>{
-        const sel = (state.answers[g.id]===i);
-        const handler = 'selectGroup(\''+g.id+'\','+i+')';
-        return '<div class="option'+(sel?' selected':'')+'" role="button" tabindex="0" onclick="'+handler+'" onkeydown="if(event.key===\'Enter\'){'+handler+'}"><span class="mark"></span><span>'+opt+'</span></div>';
+        const sel = g.multi ? (state.answers[g.id]||[]).includes(i) : (state.answers[g.id]===i);
+        const handler = g.multi ? 'toggleGroupMulti(\''+g.id+'\','+i+','+(g.noneIndex!==undefined?g.noneIndex:'undefined')+')' : 'selectGroup(\''+g.id+'\','+i+')';
+        const cls = 'option'+(g.multi?' multi':'')+(sel?' selected':'');
+        return '<div class="'+cls+'" role="button" tabindex="0" onclick="'+handler+'" onkeydown="if(event.key===\'Enter\'){'+handler+'}"><span class="mark"></span><span>'+opt+'</span></div>';
       }).join('');
       return '<div class="qsub"><div class="field-label">'+g.label+'</div>'+opts+'</div>';
     }).join('');
   } else if(q.type==='text'){
-    const val = state.answers[q.id]||'';
+    const val = escapeHtml(state.answers[q.id]||'');
     body = '<textarea id="text-input" rows="3" placeholder="'+(q.placeholder||'')+'">'+val+'</textarea>';
   } else if(q.type==='text_contact'){
-    const val = state.answers[q.id]||'';
+    const val = escapeHtml(state.answers[q.id]||'');
     body = '<textarea id="text-input" rows="3" placeholder="'+(q.placeholder||'')+'">'+val+'</textarea>'+
       '<p class="sub" style="margin:2px 0 14px;font-size:13px;">'+(q.contactSubtitle||'')+'</p>'+
       '<div class="field-label">Name (optional)</div>'+
-      '<input type="text" id="contact-name" placeholder="Your name" value="'+(state.answers.contact_name||'')+'">'+
+      '<input type="text" id="contact-name" placeholder="Your name" value="'+escapeHtml(state.answers.contact_name||'')+'">'+
       '<div class="field-label">Email or phone (optional)</div>'+
-      '<input type="text" id="contact-info" placeholder="you@email.com or phone number" value="'+(state.answers.contact_info||'')+'">';
+      '<input type="text" id="contact-info" placeholder="you@email.com or phone number" value="'+escapeHtml(state.answers.contact_info||'')+'">';
   }
 
   const isLast = state.step === QUESTIONS.length-1;
@@ -547,9 +539,38 @@ function questionHTML(){
   );
 }
 
-function selectSingle(step,i){ state.answers[QUESTIONS[step].id]=i; render(); }
+function selectSingle(step,i){
+  state.answers[QUESTIONS[step].id]=i;
+  render();
+  // Auto-advance shortly after picking, so single-choice questions feel
+  // like one tap instead of two. Guarded so a quick "Back" or picking a
+  // different option first doesn't cause a stray double-advance.
+  setTimeout(()=>{
+    if(state.mode==='question' && state.step===step){ goNext(step); }
+  }, 300);
+}
 
 function selectGroup(gid,i){ state.answers[gid]=i; render(); }
+
+function toggleGroupMulti(gid,i,noneIndex){
+  if(!state.answers[gid]) state.answers[gid]=[];
+  const arr = state.answers[gid];
+  const pos = arr.indexOf(i);
+  if(pos>=0){
+    arr.splice(pos,1);
+  } else {
+    // "None" option is exclusive: picking it clears others, picking others clears it
+    if(noneIndex!==undefined){
+      if(i===noneIndex){ arr.length=0; }
+      else {
+        const nonePos = arr.indexOf(noneIndex);
+        if(nonePos>=0) arr.splice(nonePos,1);
+      }
+    }
+    arr.push(i);
+  }
+  render();
+}
 
 function toggleMulti(step,i){
   const q = QUESTIONS[step];
@@ -629,8 +650,13 @@ async function finishSurvey(){
       response[q.id] = state.answers[q.id] || '';
     } else if(q.type==='group'){
       q.groups.forEach(g=>{
-        const idx = state.answers[g.id];
-        response[g.id] = (idx===undefined) ? null : g.options[idx];
+        if(g.multi){
+          const idxArr = state.answers[g.id]||[];
+          response[g.id] = idxArr.map(i=>g.options[i]);
+        } else {
+          const idx = state.answers[g.id];
+          response[g.id] = (idx===undefined) ? null : g.options[idx];
+        }
       });
     }
   });
